@@ -44,9 +44,6 @@ env/
 *.sqlite3
 ecotrack.db
 
-# Large CSV data files
-data/conso-elec-gaz-annuelle-par-secteur-dactivite-agregee-commune.csv
-
 # Alembic
 alembic/versions/__pycache__/
 
