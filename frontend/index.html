@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTrack - Tableau de bord</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 1400px;
+            width: 100%;
+            min-height: 90vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .auth-section {
+            padding: 40px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .dashboard {
+            display: none;
+            padding: 30px;
+        }
+
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h3 {
+            color: #667eea;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h4 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #667eea;
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 EcoTrack</h1>
+            <p>Plateforme de suivi des indicateurs environnementaux</p>
+        </div>
+
+        <!-- Section Authentification -->
+        <div id="authSection" class="auth-section">
+            <div id="loginForm">
+                <h2 style="text-align: center; margin-bottom: 30px;">Connexion</h2>
+                <div id="authMessage"></div>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="admin@ecotrack.com" value="admin@ecotrack.com">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Mot de passe</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" value="admin123">
+                </div>
+                <button class="btn btn-primary" onclick="login()">Se connecter</button>
+                <button class="btn btn-secondary" onclick="showSignup()">Créer un compte</button>
+            </div>
+
+            <div id="signupForm" class="hidden">
+                <h2 style="text-align: center; margin-bottom: 30px;">Inscription</h2>
+                <div id="signupMessage"></div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="signupUsername">Nom d'utilisateur</label>
+                    <input type="text" id="signupUsername" placeholder="username">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Mot de passe</label>
+                    <input type="password" id="signupPassword" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary" onclick="signup()">S'inscrire</button>
+                <button class="btn btn-secondary" onclick="showLogin()">Retour à la connexion</button>
+            </div>
+        </div>
+
+        <!-- Section Dashboard -->
+        <div id="dashboard" class="dashboard">
+            <div class="user-info">
+                <div>
+                    <h3 id="userWelcome">Bienvenue</h3>
+                    <p id="userRole"></p>
+                </div>
+                <button class="btn btn-secondary" style="width: auto; padding: 10px 20px;" onclick="logout()">Déconnexion</button>
+            </div>
+
+            <!-- Filtres -->
+            <div class="filters">
+                <div class="form-group">
+                    <label for="filterType">Type</label>
+                    <select id="filterType" onchange="loadIndicators()">
+                        <option value="">Tous</option>
+                        <option value="air_quality">Qualité de l'air</option>
+                        <option value="air_quality_no">NO</option>
+                        <option value="air_quality_no2">NO2</option>
+                        <option value="air_quality_o3">O3</option>
+                        <option value="air_quality_pm10">PM10</option>
+                        <option value="air_quality_pm25">PM2.5</option>
+                        <option value="energy_agriculture">Énergie Agriculture</option>
+                        <option value="energy_industrie">Énergie Industrie</option>
+                        <option value="energy_tertiaire">Énergie Tertiaire</option>
+                        <option value="energy_residentiel">Énergie Résidentiel</option>
+                        <option value="weather_temperature">Température</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterZone">Zone</label>
+                    <select id="filterZone" onchange="loadIndicators()">
+                        <option value="">Toutes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterSource">Source</label>
+                    <select id="filterSource" onchange="loadIndicators()">
+                        <option value="">Toutes</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filterLimit">Résultats</label>
+                    <select id="filterLimit" onchange="loadIndicators()">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <h4>Total Indicateurs</h4>
+                    <div class="value" id="totalIndicators">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Zones</h4>
+                    <div class="value" id="totalZones">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Sources</h4>
+                    <div class="value" id="totalSources">-</div>
+                </div>
+                <div class="stat-card">
+                    <h4>Valeur Moyenne</h4>
+                    <div class="value" id="avgValue">-</div>
+                </div>
+            </div>
+
+            <!-- Graphique simple -->
+            <div class="chart-container">
+                <h3 style="margin-bottom: 20px;">Tendances récentes</h3>
+                <canvas id="chart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- Tableau des indicateurs -->
+            <div class="table-container">
+                <div id="loadingIndicators" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Chargement des données...</p>
+                </div>
+                <table id="indicatorsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Nom</th>
+                            <th>Valeur</th>
+                            <th>Unité</th>
+                            <th>Date</th>
+                            <th>Zone</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody id="indicatorsBody">
+                    </tbody>
+                </table>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>
