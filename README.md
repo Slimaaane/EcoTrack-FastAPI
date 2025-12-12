@@ -1,3 +1,5 @@
+COMMANDE POUR LANCER FASTAPI : python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
 # 🌍 EcoTrack FastAPI
 
 **API REST complète pour la collecte, le stockage et la visualisation d'indicateurs environnementaux**
